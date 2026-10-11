@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      LISTEN_ADDR: ${LISTEN_ADDR:-:8080}
+      OLLAMA_URL: ${OLLAMA_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      WORKER_COUNT: ${WORKER_COUNT:-1}
+      QUEUE_SIZE: ${QUEUE_SIZE:-8}
+      MAX_INPUT_CHARS: ${MAX_INPUT_CHARS:-8000}
+      MAX_MESSAGES: ${MAX_MESSAGES:-20}
+      MAX_OUTPUT_TOKENS: ${MAX_OUTPUT_TOKENS:-512}
+      NUM_CTX: ${NUM_CTX:-4096}
+      RATE_LIMIT_RPM: ${RATE_LIMIT_RPM:-5}
+      JOB_TTL: ${JOB_TTL:-15m}
+      REQUEST_TIMEOUT: ${REQUEST_TIMEOUT:-2m}
+      API_KEY: ${API_KEY:-replace-with-a-long-random-value}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # Optional local Ollama. Start it with:
+  # OLLAMA_URL=http://ollama:11434 docker compose --profile ollama up -d
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["ollama"]
+    restart: unless-stopped
+    expose:
+      - "11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  ollama_models:

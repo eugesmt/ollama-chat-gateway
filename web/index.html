@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Тестовый интерфейс приватного сервиса локальной LLM">
+  <title>Приватный AI-сервис · Local LLM</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="page-glow page-glow-a" aria-hidden="true"></div>
+  <div class="page-glow page-glow-b" aria-hidden="true"></div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Приватный AI-сервис">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>
+          <span class="eyebrow">LOCAL LLM / PRIVATE NETWORK</span>
+          <span class="brand-title">Приватный AI-сервис</span>
+        </span>
+      </a>
+      <div class="connection-state" title="Страница обслуживается вашим Go-сервисом">
+        <span class="connection-dot" aria-hidden="true"></span>
+        <span>локальный контур</span>
+      </div>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <p class="section-kicker">День 30 · наблюдаемая очередь</p>
+        <h1 id="page-title">Два клиента.<br><em>Одна модель.</em></h1>
+        <p class="hero-lead">Проверьте, как ваш backend принимает запросы, ставит их в очередь и возвращает ответ модели потоково.</p>
+      </div>
+
+      <div class="hero-card" aria-label="Состояние очереди">
+        <div class="hero-card-top">
+          <span class="mini-label">ОЧЕРЕДЬ ЗАДАЧ</span>
+          <span class="live-pill"><span class="live-dot" aria-hidden="true"></span> LIVE</span>
+        </div>
+        <div class="queue-total" data-stat="total">—</div>
+        <div class="queue-total-label">запросов сейчас в работе</div>
+        <div class="queue-breakdown">
+          <div><strong data-stat="queued">—</strong><span>в очереди</span></div>
+          <div><strong data-stat="running">—</strong><span>выполняются</span></div>
+          <div><strong data-stat="capacity">—</strong><span>ёмкость</span></div>
+        </div>
+        <p class="queue-updated" data-queue-updated>обновление при загрузке…</p>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-labelledby="controls-title">
+      <div class="toolbar-heading">
+        <span class="toolbar-icon" aria-hidden="true">⌘</span>
+        <div>
+          <h2 id="controls-title">Панель тестирования</h2>
+          <p>Запускайте сценарии с одного экрана</p>
+        </div>
+      </div>
+      <div class="toolbar-actions">
+        <button class="button button-quiet" type="button" data-action="fill-demo" title="Подставить длинный запрос в A и короткий в B">
+          <span aria-hidden="true">↗</span> Заполнить демо очереди
+        </button>
+        <button class="button button-primary" type="button" data-action="run-both">
+          <span aria-hidden="true">▶</span> Запустить A + B
+        </button>
+        <button class="button button-quiet" type="button" data-action="clear-all">
+          <span aria-hidden="true">⌫</span> Очистить
+        </button>
+      </div>
+      <div class="api-key-wrap">
+        <label for="api-key">API key <span>(необязательно)</span></label>
+        <div class="key-input-row">
+          <input id="api-key" type="password" autocomplete="off" placeholder="Bearer token">
+          <button class="icon-button" type="button" data-action="toggle-key" aria-label="Показать API key" title="Показать API key">◉</button>
+        </div>
+        <p>Для SSE ключ добавляется как <code>api_key</code> в URL.</p>
+      </div>
+    </section>
+
+    <div class="notice" role="status" aria-live="polite" data-global-notice hidden></div>
+
+    <section class="chat-grid" aria-label="Тестовые клиенты">
+      <article class="chat-panel" data-client="client-a">
+        <header class="panel-header">
+          <div class="client-identity">
+            <span class="client-avatar avatar-a" aria-hidden="true">A</span>
+            <div>
+              <p class="client-overline">CLIENT A</p>
+              <h2>Клиент A</h2>
+            </div>
+          </div>
+          <span class="status-chip status-idle" data-role="status">Готов</span>
+        </header>
+
+        <div class="panel-meta">
+          <span>job <code data-role="job">—</code></span>
+          <span data-role="position-label">позиция <strong data-role="position">—</strong></span>
+        </div>
+
+        <div class="messages" data-role="messages" role="log" aria-live="polite" aria-label="История чата клиента A">
+          <div class="empty-chat" data-role="empty">
+            <span class="empty-icon" aria-hidden="true">✦</span>
+            <p>Начните разговор</p>
+            <span>Ответ модели появится здесь потоково</span>
+          </div>
+        </div>
+
+        <div class="metrics" aria-label="Метрики запроса">
+          <div class="metric"><span>WAIT</span><strong data-role="wait">—</strong></div>
+          <div class="metric"><span>TTFT</span><strong data-role="ttft">—</strong></div>
+          <div class="metric"><span>TOTAL</span><strong data-role="total">—</strong></div>
+        </div>
+
+        <form class="composer" data-role="composer">
+          <label class="sr-only" for="input-a">Сообщение для клиента A</label>
+          <textarea id="input-a" data-role="input" rows="2" maxlength="8000" placeholder="Напишите сообщение… (Ctrl + Enter — отправить)"></textarea>
+          <div class="composer-bottom">
+            <span class="char-count" data-role="counter">0 / 8 000</span>
+            <button class="send-button" type="submit"><span>Отправить</span><span aria-hidden="true">↗</span></button>
+          </div>
+        </form>
+        <p class="panel-error" data-role="error" role="alert" hidden></p>
+      </article>
+
+      <article class="chat-panel" data-client="client-b">
+        <header class="panel-header">
+          <div class="client-identity">
+            <span class="client-avatar avatar-b" aria-hidden="true">B</span>
+            <div>
+              <p class="client-overline">CLIENT B</p>
+              <h2>Клиент B</h2>
+            </div>
+          </div>
+          <span class="status-chip status-idle" data-role="status">Готов</span>
+        </header>
+
+        <div class="panel-meta">
+          <span>job <code data-role="job">—</code></span>
+          <span data-role="position-label">позиция <strong data-role="position">—</strong></span>
+        </div>
+
+        <div class="messages" data-role="messages" role="log" aria-live="polite" aria-label="История чата клиента B">
+          <div class="empty-chat" data-role="empty">
+            <span class="empty-icon" aria-hidden="true">✦</span>
+            <p>Начните разговор</p>
+            <span>Ответ модели появится здесь потоково</span>
+          </div>
+        </div>
+
+        <div class="metrics" aria-label="Метрики запроса">
+          <div class="metric"><span>WAIT</span><strong data-role="wait">—</strong></div>
+          <div class="metric"><span>TTFT</span><strong data-role="ttft">—</strong></div>
+          <div class="metric"><span>TOTAL</span><strong data-role="total">—</strong></div>
+        </div>
+
+        <form class="composer" data-role="composer">
+          <label class="sr-only" for="input-b">Сообщение для клиента B</label>
+          <textarea id="input-b" data-role="input" rows="2" maxlength="8000" placeholder="Напишите сообщение… (Ctrl + Enter — отправить)"></textarea>
+          <div class="composer-bottom">
+            <span class="char-count" data-role="counter">0 / 8 000</span>
+            <button class="send-button" type="submit"><span>Отправить</span><span aria-hidden="true">↗</span></button>
+          </div>
+        </form>
+        <p class="panel-error" data-role="error" role="alert" hidden></p>
+      </article>
+    </section>
+
+    <section class="test-lab" aria-labelledby="lab-title">
+      <div class="test-lab-heading">
+        <div class="lab-icon" aria-hidden="true">⌁</div>
+        <div>
+          <p class="section-kicker">Быстрые проверки</p>
+          <h2 id="lab-title">Проверка ограничений</h2>
+        </div>
+        <p class="test-lab-description">Запросы этой панели не отображаются в чатах — результат появится в уведомлении.</p>
+      </div>
+      <div class="test-actions">
+        <button class="test-action" type="button" data-action="rate-test">
+          <span class="test-action-icon">↯</span>
+          <span><strong>Rate limit</strong><small>6 быстрых запросов</small></span>
+          <span class="test-arrow" aria-hidden="true">→</span>
+        </button>
+        <button class="test-action" type="button" data-action="context-test">
+          <span class="test-action-icon">↕</span>
+          <span><strong>Max context</strong><small>сообщение на 16 000 символов</small></span>
+          <span class="test-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span><span class="footer-dot" aria-hidden="true"></span> Запросы идут через ваш backend → Ollama</span>
+      <span>Автообновление очереди: 5 сек</span>
+    </footer>
+  </main>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
